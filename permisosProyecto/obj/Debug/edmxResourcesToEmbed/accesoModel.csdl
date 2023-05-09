@@ -1,0 +1,125 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="accesoModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+  <EntityType Name="permiso">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="nombre" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+    <NavigationProperty Name="UsuarioPermisos" Relationship="Self.FK_UsuarioPermisos_permisos" FromRole="permisos" ToRole="UsuarioPermisos" />
+  </EntityType>
+  <EntityType Name="sysdiagram">
+    <Key>
+      <PropertyRef Name="diagram_id" />
+    </Key>
+    <Property Name="name" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="principal_id" Type="Int32" Nullable="false" />
+    <Property Name="diagram_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="version" Type="Int32" />
+    <Property Name="definition" Type="Binary" MaxLength="Max" FixedLength="false" />
+  </EntityType>
+  <EntityType Name="tipo">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="nombre" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+    <NavigationProperty Name="usuarios" Relationship="Self.FK_usuario_tipo" FromRole="tipo" ToRole="usuario" />
+  </EntityType>
+  <EntityType Name="usuario">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="nombre" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="correo" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="pass" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="idtipo" Type="Int32" Nullable="false" />
+    <NavigationProperty Name="tipo" Relationship="Self.FK_usuario_tipo" FromRole="usuario" ToRole="tipo" />
+    <NavigationProperty Name="UsuarioPermisos" Relationship="Self.FK_UsuarioPermisos_usuario" FromRole="usuario" ToRole="UsuarioPermisos" />
+    <NavigationProperty Name="UsuarioPermisos1" Relationship="Self.FK_UsuarioPermisos_usuario1" FromRole="usuario" ToRole="UsuarioPermisos" />
+  </EntityType>
+  <EntityType Name="UsuarioPermiso">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="idpermiso" Type="Int32" Nullable="false" />
+    <Property Name="idusuario" Type="Int32" Nullable="false" />
+    <Property Name="idpadre" Type="Int32" />
+    <NavigationProperty Name="permiso" Relationship="Self.FK_UsuarioPermisos_permisos" FromRole="UsuarioPermisos" ToRole="permisos" />
+    <NavigationProperty Name="usuario" Relationship="Self.FK_UsuarioPermisos_usuario" FromRole="UsuarioPermisos" ToRole="usuario" />
+    <NavigationProperty Name="usuario1" Relationship="Self.FK_UsuarioPermisos_usuario1" FromRole="UsuarioPermisos" ToRole="usuario" />
+  </EntityType>
+  <Association Name="FK_UsuarioPermisos_permisos">
+    <End Role="permisos" Type="Self.permiso" Multiplicity="1" />
+    <End Role="UsuarioPermisos" Type="Self.UsuarioPermiso" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="permisos">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="UsuarioPermisos">
+        <PropertyRef Name="idpermiso" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_usuario_tipo">
+    <End Role="tipo" Type="Self.tipo" Multiplicity="1" />
+    <End Role="usuario" Type="Self.usuario" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="tipo">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="usuario">
+        <PropertyRef Name="idtipo" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_UsuarioPermisos_usuario">
+    <End Role="usuario" Type="Self.usuario" Multiplicity="1" />
+    <End Role="UsuarioPermisos" Type="Self.UsuarioPermiso" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="usuario">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="UsuarioPermisos">
+        <PropertyRef Name="idusuario" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_UsuarioPermisos_usuario1">
+    <End Role="usuario" Type="Self.usuario" Multiplicity="0..1" />
+    <End Role="UsuarioPermisos" Type="Self.UsuarioPermiso" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="usuario">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="UsuarioPermisos">
+        <PropertyRef Name="idpadre" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityContainer Name="accesoEntities" annotation:LazyLoadingEnabled="true">
+    <EntitySet Name="permisos" EntityType="Self.permiso" />
+    <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagram" />
+    <EntitySet Name="tipoes" EntityType="Self.tipo" />
+    <EntitySet Name="usuarios" EntityType="Self.usuario" />
+    <EntitySet Name="UsuarioPermisos" EntityType="Self.UsuarioPermiso" />
+    <AssociationSet Name="FK_UsuarioPermisos_permisos" Association="Self.FK_UsuarioPermisos_permisos">
+      <End Role="permisos" EntitySet="permisos" />
+      <End Role="UsuarioPermisos" EntitySet="UsuarioPermisos" />
+    </AssociationSet>
+    <AssociationSet Name="FK_usuario_tipo" Association="Self.FK_usuario_tipo">
+      <End Role="tipo" EntitySet="tipoes" />
+      <End Role="usuario" EntitySet="usuarios" />
+    </AssociationSet>
+    <AssociationSet Name="FK_UsuarioPermisos_usuario" Association="Self.FK_UsuarioPermisos_usuario">
+      <End Role="usuario" EntitySet="usuarios" />
+      <End Role="UsuarioPermisos" EntitySet="UsuarioPermisos" />
+    </AssociationSet>
+    <AssociationSet Name="FK_UsuarioPermisos_usuario1" Association="Self.FK_UsuarioPermisos_usuario1">
+      <End Role="usuario" EntitySet="usuarios" />
+      <End Role="UsuarioPermisos" EntitySet="UsuarioPermisos" />
+    </AssociationSet>
+  </EntityContainer>
+</Schema>

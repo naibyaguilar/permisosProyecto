@@ -1,0 +1,256 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="Site1.master.cs" Inherits="permisosProyecto.Site1" %>
+
+<!DOCTYPE html>
+
+<html>
+<head runat="server">
+	<title>Inicio</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--===============================================================================================-->	
+	<link rel="icon" type="image/png" href="images/icons/favicon.ico"/>
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="vendor/bootstrap/css/bootstrap.min.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="fonts/font-awesome-4.7.0/css/font-awesome.min.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="fonts/iconic/css/material-design-iconic-font.min.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="vendor/animate/animate.css">
+<!--===============================================================================================-->	
+	<link rel="stylesheet" type="text/css" href="vendor/css-hamburgers/hamburgers.min.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="vendor/animsition/css/animsition.min.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="vendor/select2/select2.min.css">
+<!--===============================================================================================-->	
+	<link rel="stylesheet" type="text/css" href="vendor/daterangepicker/daterangepicker.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="css/util.css">
+	<link rel="stylesheet" type="text/css" href="css/main.css">
+
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.10.20/r-2.2.3/datatables.min.css" />
+
+    <asp:ContentPlaceHolder ID="head" runat="server">
+    </asp:ContentPlaceHolder>
+</head>
+<body>
+    <form runat="server" method="post">
+   <div class="limiter">
+		<div class="container-login100" style="background-image: url('images/bg-01.jpg');">		
+				
+            <asp:ContentPlaceHolder ID="ContentPlaceHolder1" runat="server">
+            </asp:ContentPlaceHolder>
+        
+			</div>
+		</div>
+	
+
+	<div id="dropDownSelect1"></div>
+	
+<!--===============================================================================================-->
+	<script src="vendor/jquery/jquery-3.2.1.min.js"></script>
+<!--===============================================================================================-->
+	<script src="vendor/animsition/js/animsition.min.js"></script>
+<!--===============================================================================================-->
+	<script src="vendor/bootstrap/js/popper.js"></script>
+	<script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+<!--===============================================================================================-->
+	<script src="vendor/select2/select2.min.js"></script>
+<!--===============================================================================================-->
+	<script src="vendor/daterangepicker/moment.min.js"></script>
+	<script src="vendor/daterangepicker/daterangepicker.js"></script>
+<!--===============================================================================================-->
+	<script src="vendor/countdowntime/countdowntime.js"></script>
+<!--===============================================================================================-->
+	<script src="js/main.js"></script>
+
+    <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.18/af-2.3.3/r-2.2.2/datatables.min.js"></script>
+
+
+    <script>
+        $(document).ready(function () {
+         
+            var table = $("#table").DataTable({
+                ajax: {
+                    method: "post",
+                    url: "inicio.aspx/getList",
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    data: function (d) {
+                        return JSON.stringify(d);
+                    },
+                    dataSrc: "d.data"
+                },
+                'columns': [
+                    { "data": "idusuario" },
+                    {
+                        "data": function (data, type, row) {
+                            var credencial;
+                            switch (data.permiso) {
+                                case 0:
+                                    credencial = "Ver, Agregar, Modificar y Eliminar."
+                                    break
+                                case 1:
+                                    credencial = "Ver, Agregar y Modificar."
+                                    break
+                                case 2:
+                                    credencial = "Ver y Agregar."
+                                    break
+                                case 3:
+                                    credencial = "Ver"
+                                    break
+                            }
+                            return '<button type="button" data-modal="editar" data-permiso="' + credencial + '" class="btn btn-primary" onclick="createModal(this)" value=' + data.idusuario + '><li class="fa fa-eye"></li></button>'
+                        }
+                    },
+                    {
+                        "data": "id", "render": function (data, type, row) {
+                            return '<button class="btn btn-danger" value='+data+'><li class="fa fa-trash"></li></button>'
+                        }
+                    }
+                   
+                ],
+                language: {
+                    lengthMenu: "Visualizar _MENU_ registros por pagina",
+                    zeroRecords: "Nada encontrado - Discuple",
+                    info: "Visualisar _START_ a _END_ de _TOTAL_ entradas",
+                    infoEmpty: "Ningun registro disponible",
+                    infoFiltered: "(filtered from _MAX_ total records)",
+                    oPaginate: {
+                        sPrevious: "Anterior",
+                        sNext: "Siguiente"
+                    },
+                    processing: "DataTables esta actualmente ocupado"
+                },
+            });
+
+
+        });
+
+        var createModal = function (e) {
+            var contenedor = $("#contenedor");
+            $(contenedor).html("");
+            var data = $(e).data()
+            console.log(data)
+            if (data.modal == "editar") {
+                for (var i in data) {
+                    if (i == "permiso") {
+                        $(contenedor).append("<div class=form-group'><b><label> " + i.toUpperCase() + " : </label></b> <label name=" + i + ">" + data[i] + "</label></div >")
+                    } else {
+                    }
+                }
+                $(contenedor).append('<table id="table2" class="display table-bordered table-hover  table responsive wrap"><thead class= "thead-dark" >' +
+                    '<tr>' +
+                    '<th>Token</th>' +
+                    '<th>Consultar</th>' +
+                    '<th>eliminar</th>' +
+                    '</tr ></thead > <tbody></tbody></table > ');
+                $("#table2").DataTable({
+                    ajax: {
+                        method: "post",
+                        url: "inicio.aspx/getList",
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        data: function (d) {
+                            return JSON.stringify(d);
+                        },
+                        dataSrc: "d.data"
+                    },
+                    'columns': [
+                        { "data": "idusuario" },
+                        {
+                            "data": function (data, type, row) {
+                                var credencial;
+                                switch (data.permiso) {
+                                    case 0:
+                                        credencial = "Ver, Agregar, Modificar y Eliminar."
+                                        break
+                                    case 1:
+                                        credencial = "Ver, Agregar y Modificar."
+                                        break
+                                    case 2:
+                                        credencial = "Ver y Agregar."
+                                        break
+                                    case 3:
+                                        credencial = "Ver"
+                                        break
+                                }
+                                return '<button type="button" data-permiso="' + credencial + '" class="btn btn-primary" onclick="createModal(this)" value=' + data.idusuario + '><li class="fa fa-eye"></li></button>'
+                            }
+                        },
+                        {
+                            "data": "id", "render": function (data, type, row) {
+                                return '<button class="btn btn-danger" value=' + data + '><li class="fa fa-trash"></li></button>'
+                            }
+                        }
+
+                    ],
+                    language: {
+                        lengthMenu: "Visualizar _MENU_ registros por pagina",
+                        zeroRecords: "Nada encontrado - Discuple",
+                        info: "Visualisar _START_ a _END_ de _TOTAL_ entradas",
+                        infoEmpty: "Ningun registro disponible",
+                        infoFiltered: "(filtered from _MAX_ total records)",
+                        oPaginate: {
+                            sPrevious: "Anterior",
+                            sNext: "Siguiente"
+                        },
+                        processing: "DataTables esta actualmente ocupado"
+                    },
+                });
+            } else if (data.modal == "agregar") {
+                $(contenedor).append('<div class="form-group">' +
+                    '<label for= "exampleInputEmail1">Nombre</label>' +
+                    '<input type="text" id="txtnombre" runat="server" class="form-control" placeholder="Juan Escutria">' +
+                    '</div>' +
+                    '<div class="form-group">' +
+                    '<label for="exampleInputPassword1">Correo</label>' +
+                    '<input type="text" runat="server" id="txtcorreo" class="form-control" placeholder="JuanEscutria@gmail.com">' +
+                    '</div>' +
+                    '<div class="form-group">' +
+                    '<label for="exampleInputPassword1">Contraseña</label>' +
+                    '<input runat="server" type="password" id="txtcontrasenia" class="form-control" placeholder="Contraseña">' +
+                    '</div>' +
+                    '<div class="form-group">' +
+                    '<label for="exampleInputPassword1">Tipo de usuario</label>' +
+                    '<% if (Session["id"] != null) { %>' +
+                    '<select class="mdb-select md-form">' +
+                    '<% string tipo = Session["nombreTipo"].ToString(); %>' +
+                    '<% if (tipo == "Super Administrador"){%>'+
+                    '<option value="6">Administrador</option>' +
+                    '<% }%>' +
+                    '<option value="7" selected>Vendedor</option>'+
+                        '</select>'+
+                    '</div>' +
+                    '<div class="form-group">' +
+                    '<div class="radio">' +
+                    '<% string permiso = Session["permiso"].ToString(); %>' +
+                    '<% if (permiso == "0") { %>' +
+                    '<label><input type="radio" runat="server" id="rbt0" name="XYZ" value="0" checked>Ver, agregar, modificar y eliminar.</label>' +
+                    '<% }%>' +
+                    '</div>' +
+                    '<% if (permiso == "1" || permiso == "0"  ){ %>' +
+                    '<div class="radio">' +
+                    '<label><input type="radio" name="XYZ" id="rbt1"value="1" checked>ver, agregar y modificar</label>' +
+                    '</div>' +
+                    '<% } %>' +
+                    '<% if (permiso == "2"|| permiso == "1" || permiso == "0") {%>' +
+                    '<div class="radio">' +
+                    '<label><input type="radio"  name="XYZ" id="rbt2" value="2" checked>ver y agregar</label>' +
+                    '</div>' +
+                    '<% } %>' +
+                   ' <% } %>' +
+                    '<div class="radio">' +
+                    '<label><input type="radio" name="XYZ" id="rbt3" value="3" checked>Solo ver</label>' +
+                    '</div>' +
+                    '</div>' +
+                    '<asp:Button id="btn" type="button" runat="server" class="btn btn-primary" OnClick="btn_Click"/>')
+
+            }
+            $('#exampleModal').modal('show');
+        }
+    </script>
+        </form>
+</body>
+</html>
